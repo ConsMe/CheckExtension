@@ -1,0 +1,20 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #ebf4fb;
+    font-family: 'Open Sans', sans-serif;
+    padding-bottom: 420px;
+}
+
+.navbar-brand {
+    font-family: 'Fredericka the Great', cursive;
+    font-size: 2rem;
+    line-height: 1rem;
+}
+
+input {
+    color: #212529cf !important;
+}
