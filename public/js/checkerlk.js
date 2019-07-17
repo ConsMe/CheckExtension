@@ -2051,7 +2051,9 @@ new Vue({
         checkers: this.checkers,
         url: window.location.origin + '/'
       }, function (response) {
-        if (!response.settedUp) {
+        var lastError = chrome.runtime.lastError;
+
+        if (lastError || !response.settedUp) {
           _this5.notSettedUp = true;
           return;
         }
