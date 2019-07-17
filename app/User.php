@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role'
+        'name', 'email', 'password', 'role', 'api_token', 'force_logout'
     ];
 
     /**
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'remember_token', 'password'
     ];
 
     /**
@@ -36,4 +36,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function checkers()
+    {
+        return $this->hasMany('App\AdminHasChecker', 'admin_id', 'id');
+    }
+
+    public function checkertasks()
+    {
+        return $this->hasMany('App\Checker', 'checker_id', 'id');
+    }
+
+    public function logs()
+    {
+        return $this->hasManyThrough('App\Log', 'App\Checker', 'checker_id', 'checker_id', 'id', 'id');
+    }
 }

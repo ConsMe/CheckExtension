@@ -27,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('ifrole', function ($roles) {
             return in_array(auth()->user()->role, $roles);
         });
+
     }
 }

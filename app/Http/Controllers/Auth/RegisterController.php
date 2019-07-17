@@ -50,6 +50,10 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $messages = [
+            'name.unique' => 'Пользователь с таким именем уже существует',
+        ];
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255', 'min:5', 'unique:users'],
             // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -59,7 +63,7 @@ class RegisterController extends Controller
                 'min:8',
                 // 'confirmed'
             ],
-        ]);
+        ], $messages);
     }
 
     /**
@@ -75,6 +79,7 @@ class RegisterController extends Controller
             // 'email' => $data['email'],
             'role' => $role,
             'password' => Hash::make($data['password']),
+            'api_token' => str_random(60)
         ]);
     }
 
@@ -85,9 +90,14 @@ class RegisterController extends Controller
         event(new Registered($user = $this->create($request->all(), $role)));
 
         // $this->guard()->login($user);
+        if ($role == 'admin') {
+            $users = User::whereIn('role', ['admin', 'checker'])->with('checkers.user:id,name')->get(['id', 'name', 'role'])->groupBy('role')->toArray();
+            return $users;
+        } else {
+            $users = User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name']);
+            return $users;
+        }
 
-        // return view('admins', ['newAdmin' => $user]);
-        return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath())->with('newAdmin', $request->name);
+        // return $this->registered($request, $user) ?: redirect($this->redirectPath());
     }
 }

@@ -21,13 +21,13 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:Open+Sans|Open+Sans+Condensed:300&display=swap&subset=cyrillic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Open+Sans|Open+Sans+Condensed:300&display=swap&subset=cyrillic" rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link href="/css/main.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" integrity="sha384-i1LQnF23gykqWXg6jxC2ZbCbUMxyw5gLZY6UiUS98LYV5unm8GWmfkIS6jqJfb4E" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
     @yield('css')
 </head>
 <body>
@@ -76,7 +76,7 @@
                                 </li>
                             @endifrole
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" ref="exitButton" >
                                     Выйти
                                 </a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -94,6 +94,7 @@
         </main>
 
     </div>
+    <script src="/js/app.js"></script>
     @yield('scripts')
 </body>
 </html>
