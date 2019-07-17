@@ -47,6 +47,8 @@
 </template>
 
 <script>
+    import Http from '../Http';
+
     export default {
         props: ['choosedadmin', 'checkers'],
         data() {
@@ -78,7 +80,7 @@
         methods: {
             addChecker(id, name) {
                 Vue.set(this.checkers.filter(checker => checker.id == id)[0], 'disabled', true)
-                axios.post(`/admins/addchecker`, {checker_id: id, admin_id: this.admin.id})
+                Http.post(`/admins/addchecker`, {checker_id: id, admin_id: this.admin.id})
                 .then(response => {
                     if (this.admin.checkers) {
                         this.admin.checkers.push({user: {id: id, name: name}})
@@ -100,7 +102,7 @@
             },
             removeChecker(id, name) {
                 Vue.set(this.checkers.filter(checker => checker.id == id)[0], 'disabled', true)
-                axios.post(`/admins/removechecker`, {checker_id: id, admin_id: this.admin.id})
+                Http.post(`/admins/removechecker`, {checker_id: id, admin_id: this.admin.id})
                 .then(response => {
                     this.admin.checkers.some((checker, i) => {
                         if (checker.user.id == id) {
@@ -128,7 +130,7 @@
             changePassword() {
                 this.disabled.newpassword = true
                 let password = this.newpassword
-                axios.post(`/users/changepassword`, {id: this.admin.id, password})
+                Http.post(`/users/changepassword`, {id: this.admin.id, password})
                 .then(response => {
                     toastr.success(`Пароль чекера ${name} изменен`)
                 })

@@ -1,6 +1,7 @@
 const moment = require('moment')
 Vue.component('pagination', require('laravel-vue-pagination'));
 import Inputmask from "inputmask";
+import Http from './Http';
 
 new Vue({
     el: '#app',
@@ -36,7 +37,7 @@ new Vue({
             if (this.checker.length) {
                 params.checker = this.checker
             }
-            axios.get('statistics/get', {params: params})
+            Http.get('statistics/get', {params: params})
             .then(r => {
                 this.data = r.data
             })

@@ -1,3 +1,4 @@
+import Http from './Http';
 
 new Vue({
     el: '#app',
@@ -61,7 +62,7 @@ new Vue({
         addChecker() {
             this.disabled.add = true
             let name = this.name
-            axios.post(`/register/checker`, {name: name, password: this.password})
+            Http.post(`/register/checker`, {name: name, password: this.password})
             .then(response => {
                 this.name = ''
                 this.password = ''
@@ -89,7 +90,7 @@ new Vue({
             let id = this.deleteCheckerId
             $(this.$refs.confirmation).modal('hide')
             let name = this.checkers.filter(checker => checker.id == id)[0].name
-            axios.post(`/checkers/delete`, {id: id})
+            Http.post(`/checkers/delete`, {id: id})
             .then(response => {
                 toastr.success(`Чекер ${name} удален`)
                 this.checkers = response.data
@@ -111,7 +112,7 @@ new Vue({
             let password = this.newpassword
             let name = this.checkers.filter(checker => checker.id == id)[0].name
             this.disabled.changepassword = true
-            axios.post(`/users/changepassword`, {id, password})
+            Http.post(`/users/changepassword`, {id, password})
             .then(response => {
                 toastr.success(`Пароль чекера ${name} изменен`)
                 $(this.$refs.changeData).modal('hide')

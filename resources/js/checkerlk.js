@@ -1,4 +1,4 @@
-const axios = require("axios");
+import Http from './Http';
 
 new Vue({
     el: '#app',
@@ -37,7 +37,7 @@ new Vue({
         add() {
             let {url, search, interval} = this.$data
             this.disabled.add = true
-            axios.post('/checker/add', {url, search, interval})
+            Http.post('/checker/add', {url, search, interval})
             .then(r => {
                 toastr.success('Чекер добавлен')
                 this.checkers = r.data
@@ -62,7 +62,7 @@ new Vue({
             let {id, isworking} = checker
             isworking = !isworking
             checker.disabled = true
-            axios.post('/checker/stopstart', {id, isworking})
+            Http.post('/checker/stopstart', {id, isworking})
             .then(r => {
                 let status = isworking ? 'запущен' : 'остановлен'
                 toastr.success(`Чекер ${status}`)
@@ -87,7 +87,7 @@ new Vue({
             this.disabled.delete = true
             let id = this.deleteCheckerId
             $(this.$refs.confirmation).modal('hide')
-            axios.post(`/checker/delete`, {id: id})
+            Http.post(`/checker/delete`, {id: id})
             .then(response => {
                 toastr.success(`Чекер удален`)
                 this.checkers = response.data

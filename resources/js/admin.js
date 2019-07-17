@@ -1,4 +1,5 @@
 Vue.component('change-admin', require('./components/ChangeAdmin.vue').default);
+import Http from './Http';
 
 new Vue({
     el: '#app',
@@ -39,7 +40,7 @@ new Vue({
         addadmin() {
             this.disabled.add = true
             let name = this.name
-            axios.post(`/register/admin`, {name: name, password: this.password})
+            Http.post(`/register/admin`, {name: name, password: this.password})
             .then(response => {
                 this.name = ''
                 this.password = ''
@@ -67,7 +68,7 @@ new Vue({
             let id = this.deleteAdminId
             $(this.$refs.confirmation).modal('hide')
             let name = this.admins.filter(admin => admin.id == id)[0].name
-            axios.post(`/admins/delete`, {id: id})
+            Http.post(`/admins/delete`, {id: id})
             .then(response => {
                 toastr.success(`Админ ${name} удален`)
                 this.refreshData(response.data)

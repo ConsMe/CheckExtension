@@ -1905,14 +1905,86 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./resources/js/Http.js":
+/*!******************************!*\
+  !*** ./resources/js/Http.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+var baseURL = window.App.base_url;
+var headers = {
+  'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').getAttribute('content'),
+  'X-Requested-With': 'XMLHttpRequest'
+};
+var Parent = axios__WEBPACK_IMPORTED_MODULE_0___default.a.create({
+  baseURL: baseURL,
+  headers: headers
+});
+
+function refreshAppTokens() {
+  Parent.get('/').then(function (_ref) {
+    var data = _ref.data;
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = data;
+    return wrapper.querySelector('meta[name=csrf-token]').getAttribute('content');
+  }).then(function (token) {
+    Parent.defaults.headers['X-CSRF-TOKEN'] = token;
+    document.querySelector('meta[name=csrf-token]').setAttribute('content', token);
+    console.log('refreshed');
+  });
+}
+
+setInterval(refreshAppTokens, 1000 * 60 * 60);
+
+var Http =
+/*#__PURE__*/
+function (_Parent) {
+  _inherits(Http, _Parent);
+
+  function Http() {
+    _classCallCheck(this, Http);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Http).apply(this, arguments));
+  }
+
+  return Http;
+}(Parent);
+
+;
+/* harmony default export */ __webpack_exports__["default"] = (Http);
+
+/***/ }),
+
 /***/ "./resources/js/checkerlk.js":
 /*!***********************************!*\
   !*** ./resources/js/checkerlk.js ***!
   \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Http */ "./resources/js/Http.js");
 
 new Vue({
   el: '#app',
@@ -1957,7 +2029,7 @@ new Vue({
           search = _this$$data.search,
           interval = _this$$data.interval;
       this.disabled.add = true;
-      axios.post('/checker/add', {
+      _Http__WEBPACK_IMPORTED_MODULE_0__["default"].post('/checker/add', {
         url: url,
         search: search,
         interval: interval
@@ -1990,7 +2062,7 @@ new Vue({
           isworking = checker.isworking;
       isworking = !isworking;
       checker.disabled = true;
-      axios.post('/checker/stopstart', {
+      _Http__WEBPACK_IMPORTED_MODULE_0__["default"].post('/checker/stopstart', {
         id: id,
         isworking: isworking
       }).then(function (r) {
@@ -2023,7 +2095,7 @@ new Vue({
       this.disabled["delete"] = true;
       var id = this.deleteCheckerId;
       $(this.$refs.confirmation).modal('hide');
-      axios.post("/checker/delete", {
+      _Http__WEBPACK_IMPORTED_MODULE_0__["default"].post("/checker/delete", {
         id: id
       }).then(function (response) {
         toastr.success("\u0427\u0435\u043A\u0435\u0440 \u0443\u0434\u0430\u043B\u0435\u043D");

@@ -46,6 +46,13 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($request->is('login') && $exception instanceof \Illuminate\Session\TokenMismatchException) {
+            return redirect()
+                   ->back()
+                   ->withInput($request->except(['password', 'password_confirmation']))
+                   ->with('error', 'Форма была инактивирована, попробуйте войти снова');
+        }
+
         return parent::render($request, $exception);
     }
 }
