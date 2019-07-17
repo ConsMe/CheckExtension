@@ -13437,8 +13437,9 @@ var axios = window.axios = __webpack_require__(/*! axios */ "./node_modules/axio
 
 var CancelToken = axios.CancelToken;
 var sourceAxios = CancelToken.source();
+ // const url = 'http://checkextension.test/'
 
-var url = 'http://checkextension.test/';
+var url;
 chrome.browserAction.onClicked.addListener(function (tab) {
   chrome_promise__WEBPACK_IMPORTED_MODULE_1___default.a.tabs.create({
     url: "".concat(url)
@@ -13449,6 +13450,10 @@ chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResp
 
   if (request.isSettedUp) {
     var version = chrome.runtime.getManifest().version;
+    var _url = request.url;
+    chrome.storage.local.set({
+      url: _url
+    });
     sendResponse({
       settedUp: true,
       version: version
@@ -13907,10 +13912,15 @@ function _onStart() {
 
           case 2:
             storage = _context11.sent;
-            _context11.next = 5;
+
+            if ('url' in storage) {
+              url = storage.url;
+            }
+
+            _context11.next = 6;
             return chrome_promise__WEBPACK_IMPORTED_MODULE_1___default.a.alarms.getAll();
 
-          case 5:
+          case 6:
             alarms = _context11.sent;
             alarmsName = alarms.map(function (alarm) {
               return alarm.name;
@@ -13923,7 +13933,7 @@ function _onStart() {
               }
             });
 
-          case 8:
+          case 9:
           case "end":
             return _context11.stop();
         }

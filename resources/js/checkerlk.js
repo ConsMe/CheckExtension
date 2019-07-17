@@ -105,7 +105,7 @@ new Vue({
                 this.notSettedUp = true
                 return
             }
-            chrome.runtime.sendMessage(this.extensionId, {isSettedUp: true, checkers: this.checkers}, response => {
+            chrome.runtime.sendMessage(this.extensionId, {isSettedUp: true, checkers: this.checkers, url: window.location.origin + '/'}, response => {
                 if (!response.settedUp) {
                     this.notSettedUp = true
                     return

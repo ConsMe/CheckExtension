@@ -4,7 +4,8 @@ const CancelToken = axios.CancelToken;
 const sourceAxios = CancelToken.source();
 import chromep from 'chrome-promise';
 
-const url = 'http://checkextension.test/'
+// const url = 'http://checkextension.test/'
+let url
 
 chrome.browserAction.onClicked.addListener(function(tab) {
     chromep.tabs.create({url: `${url}`})
@@ -14,6 +15,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     console.log(request)
     if (request.isSettedUp) {
         let version = chrome.runtime.getManifest().version
+        let url = request.url
+        chrome.storage.local.set({url: url})
         sendResponse({settedUp: true, version: version})
         setCheckers(request.checkers)
     }
@@ -148,6 +151,9 @@ async function sendResult(result, checker) {
 
 async function onStart() {
     let storage = await chromep.storage.local.get(null)
+    if ('url' in storage) {
+        url = storage.url
+    }
     let alarms = await chromep.alarms.getAll()
     let alarmsName = alarms.map(alarm => alarm.name)
     Object.keys(storage).filter(key => key.indexOf('checker') >= 0).forEach(key => {

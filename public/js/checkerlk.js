@@ -2048,7 +2048,8 @@ new Vue({
 
       chrome.runtime.sendMessage(this.extensionId, {
         isSettedUp: true,
-        checkers: this.checkers
+        checkers: this.checkers,
+        url: window.location.origin + '/'
       }, function (response) {
         if (!response.settedUp) {
           _this5.notSettedUp = true;
