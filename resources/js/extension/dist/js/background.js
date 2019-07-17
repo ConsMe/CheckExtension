@@ -13450,9 +13450,9 @@ chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResp
 
   if (request.isSettedUp) {
     var version = chrome.runtime.getManifest().version;
-    var _url = request.url;
+    url = request.url;
     chrome.storage.local.set({
-      url: _url
+      url: url
     });
     sendResponse({
       settedUp: true,

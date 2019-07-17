@@ -15,7 +15,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     console.log(request)
     if (request.isSettedUp) {
         let version = chrome.runtime.getManifest().version
-        let url = request.url
+        url = request.url
         chrome.storage.local.set({url: url})
         sendResponse({settedUp: true, version: version})
         setCheckers(request.checkers)
