@@ -58,6 +58,22 @@ class SuperAdminController extends Controller
         return $this->getAllChekers();
     }
 
+    public function stopChecker(Request $request)
+    {
+        $request->validate([
+            'id' => [
+                'required',
+                'numeric',
+                Rule::exists('users')->where(function ($query) {
+                    $query->where('role', 'checker');
+                })
+            ]
+        ]);
+        $user = User::where('id', $request->id)->first();
+        $user->checkertasks()->update(['isworking' => FALSE]);
+        return $this->getAllChekers();
+    }
+
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -74,7 +90,9 @@ class SuperAdminController extends Controller
         $user->update([
             'password' => Hash::make($request->password),
             'api_token' => str_random(60),
-            'force_logout' => TRUE
+            'force_logout' => TRUE,
+            'telegram_id' => NULL,
+            'telegram_auth' => FALSE
         ]);
         if ($user->role == 'checker') {
             $user->checkertasks()->update(['isworking' => FALSE]);

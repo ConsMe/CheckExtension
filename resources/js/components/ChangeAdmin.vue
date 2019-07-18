@@ -36,7 +36,7 @@
                 <button type="submit" class="btn btn-primary mr-2" :disabled="disabled.newpassword" >Изменить</button>
                 <button type="button" class="btn btn-secondary" @click="passgen()" :disabled="disabled.newpassword" >PassGen</button>
                 <p class="text-center text-secondary">
-                    <small>Админ будет автоматически разлогинен</small>
+                    <small>Админ будет автоматически разлогинен здесь и в телеграме</small>
                 </p>
             </form>
         </div>

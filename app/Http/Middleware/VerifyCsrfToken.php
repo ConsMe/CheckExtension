@@ -21,4 +21,13 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'writelog', 'logout'
     ];
+
+    public function handle($request, \Closure $next)
+    {
+        if ($request->route()->getName() == 'telegram') {
+            return $next($request);
+        }
+
+        return parent::handle($request, $next);
+    }
 }

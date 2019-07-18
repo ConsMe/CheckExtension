@@ -1,4 +1,4 @@
-const moment = require('moment')
+const moment = require('moment-timezone')
 Vue.component('pagination', require('laravel-vue-pagination'));
 import Inputmask from "inputmask";
 import Http from './Http';
@@ -11,7 +11,8 @@ new Vue({
         checker: '',
         dateFrom: '',
         dateTo: '',
-        disabled: false
+        disabled: false,
+        currentPage: 1
     },
     computed: {
         logs() {
@@ -22,10 +23,19 @@ new Vue({
         }
     },
     mounted() {
-        Inputmask({regex: "[0-3]\\d\\.[01]\\d\\.[10][90]", placeholder: "дд.мм.гг"}).mask($([this.$refs.dateFrom,this.$refs.dateTo]))
+        Inputmask("datetime", {
+            // regex: "[0-3]\\d\\.[01]\\d\\.[10][90]",
+            inputFormat: 'dd.mm.yy HH:MM',
+            placeholder: "дд.мм.гг чч:мм"
+        }).mask($([this.$refs.dateFrom,this.$refs.dateTo]))
     },
     methods: {
-        getData(page = 1) {
+        getData(page) {
+            if (page) {
+                this.currentPage = page
+            } else {
+                page = this.currentPage
+            }
             this.disabled = true
             let params = {page: page}
             if (this.dateFrom.length) {
@@ -51,6 +61,9 @@ new Vue({
             .finally(() => {
                 this.disabled = false
             })
+        },
+        setDate(hours) {
+            this.dateFrom = this.moment().tz("Europe/Moscow").subtract(hours, 'hours').format('DD.MM.YY HH:mm')
         }
     }
 })

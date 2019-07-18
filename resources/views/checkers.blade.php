@@ -53,8 +53,12 @@
 
                                     </td>
                                     <td class="text-right">
-                                        <button class="btn btn-outline-danger btn-sm mr-2" type="button" @click.stop="confirmDeleteChecker(checker.id)">
+                                        <button class="btn btn-outline-danger btn-sm mr-2" type="button" @click.stop="confirmDeleteChecker(checker.id)"
+                                            v-if="!chekerUrls[i].length">
                                             удалить
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm mr-2" type="button" @click.stop="confirmStopChecker(checker.id)" v-else>
+                                            остановить
                                         </button>
                                     </td>
                                 </tr>
@@ -68,7 +72,9 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">{{ 'Удалить чекер ' + deleteCheckerName + '?' }}</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                        <h4 class="modal-title">{{ 'Удалить чекер ' + deleteCheckerName + '?' }}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    </div>
                     <div class="modal-body">
                         <div class="alert alert-dismissible alert-warning text-left">
                             <h5 class="alert-heading mb-0">Внимание!</h5>
@@ -82,6 +88,23 @@
                 </div>
             </div>
         </div>
+        <div role="dialog" tabindex="-1" class="modal" ref="stopConfirmation">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">{{ 'Остановить чекер ' + stopCheckerName + '?' }}</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Все работы чекера будут остановлены</p>
+                            <div class="row">
+                                <div class="col text-right"><button class="btn btn-danger" type="button" @click="stopChecker">Остановить</button></div>
+                                <div class="col text-left"><button class="btn btn-secondary" type="button" data-dismiss="modal">Отмена</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <div role="dialog" tabindex="-1" class="modal" ref="changeData">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -100,7 +123,7 @@
                                     PassGen
                                 </button>
                                 <p class="text-center text-secondary mb-0">
-                                    <small>Чекер будет автоматически разлогинен и все его работы будут остановлены</small>
+                                    <small>Чекер будет автоматически разлогинен здесь и в телеграме, все его работы будут остановлены</small>
                                 </p>
                                 <div class="row mt-5">
                                     <div class="col text-right">

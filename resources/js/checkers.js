@@ -10,7 +10,8 @@ new Vue({
         disabled: {
             add: false,
             delete: false,
-            changepassword: false
+            changepassword: false,
+            stop: false
         },
         errors: {
             name: false,
@@ -18,11 +19,15 @@ new Vue({
         },
         checkers: window.checkers,
         deleteCheckerId: null,
+        stopCheckerId: null,
         changePasswordId: null
     },
     mounted() {
         $(this.$refs.confirmation).on('hidden.bs.modal', (e) => {
             this.deleteCheckerId = null
+        })
+        $(this.$refs.stopConfirmation).on('hidden.bs.modal', (e) => {
+            this.stopCheckerId = null
         })
         $(this.$refs.changeData).on('hidden.bs.modal', (e) => {
             this.changePasswordId = null
@@ -37,6 +42,12 @@ new Vue({
         deleteCheckerName() {
             if (this.deleteCheckerId) {
                 return this.checkers.filter(checker => checker.id == this.deleteCheckerId)[0].name
+            }
+            return ''
+        },
+        stopCheckerName() {
+            if (this.stopCheckerId) {
+                return this.checkers.filter(checker => checker.id == this.stopCheckerId)[0].name
             }
             return ''
         },
@@ -100,6 +111,28 @@ new Vue({
             })
             .finally(() => {
                 this.disabled.delete = false
+            });
+        },
+        confirmStopChecker(id) {
+            this.stopCheckerId = id
+            $(this.$refs.stopConfirmation).modal('show')
+        },
+        stopChecker() {
+            if (!this.stopCheckerId) return
+            this.disabled.stop = true
+            let id = this.stopCheckerId
+            $(this.$refs.stopConfirmation).modal('hide')
+            let name = this.checkers.filter(checker => checker.id == id)[0].name
+            Http.post(`/checkers/stop`, {id: id})
+            .then(response => {
+                toastr.success(`Чекер ${name} остановлен`)
+                this.checkers = response.data
+            })
+            .catch(error => {
+                toastr.warning('Что-то пошло не так, попробуйте позднее')
+            })
+            .finally(() => {
+                this.disabled.stop = false
             });
         },
         showChangeWindow(id) {

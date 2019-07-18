@@ -37,7 +37,10 @@
                                 <tr v-for="admin in sortedAdmins" :key="admin.id" @click="changeAdminWindow(admin.id)">
                                     <td>{{ admin.name }}</td>
                                     <td>
-
+                                        <span v-for="(checker,i) in admin.checkers" :key="checker.id" >
+                                            <span>{{ checker.user.name }}</span>
+                                            <span v-if="i < (admin.checkers.length - 1)">, </span>
+                                        </span>
                                     </td>
                                     <td class="text-right">
                                         <button class="btn btn-outline-danger btn-sm mr-2" type="button" @click.stop="confirmDeleteAdmin(admin.id)">

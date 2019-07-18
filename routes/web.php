@@ -22,6 +22,7 @@ Route::group(['middleware' => ['web']], function () {
             Route::post('admins/removechecker', 'SuperAdminController@removeChecker');
             Route::get('checkers', 'SuperAdminController@getCheckers')->name('checkers');
             Route::post('checkers/delete', 'SuperAdminController@deleteChecker');
+            Route::post('checkers/stop', 'SuperAdminController@stopChecker');
             Route::post('users/changepassword', 'SuperAdminController@changePassword');
         });
         Route::group(['middleware' => ['role:superadmin,admin']], function () {
@@ -46,4 +47,4 @@ Route::group(['middleware' => ['web']], function () {
     // Route::get('/home', 'HomeController@index')->name('home');
 });
 
-
+Route::post(env('TELEGRAM_BOT_TOKEN').'/webhook', 'TelegramController@webhook')->name('telegram');

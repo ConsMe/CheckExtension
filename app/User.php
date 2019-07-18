@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'api_token', 'force_logout'
+        'name', 'email', 'password', 'role', 'api_token', 'force_logout', 'telegram_id', 'telegram_auth'
     ];
 
     /**
@@ -51,5 +51,10 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasManyThrough('App\Log', 'App\Checker', 'checker_id', 'checker_id', 'id', 'id');
+    }
+
+    public function admins()
+    {
+        return $this->hasManyThrough('App\User', 'App\AdminHasChecker', 'checker_id', 'id', 'id', 'admin_id');
     }
 }

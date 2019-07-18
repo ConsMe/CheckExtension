@@ -6,7 +6,7 @@ chrome.runtime.onConnect.addListener(function(port) {
         console.log(msg)
         if (!msg.pong) return
         setTimeout(() => {
-            let search = $(document).text().indexOf(msg.search)
+            let search = $('html').html().indexOf(msg.search)
             port.postMessage({reply: true, result: search})
         }, 2000);
     });

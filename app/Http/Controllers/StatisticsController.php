@@ -19,8 +19,8 @@ class StatisticsController extends Controller
     public function getData(Request $request)
     {
         $request->validate([
-            'dateFrom' => 'date_format:d.m.y',
-            'dateTo' => 'date_format:d.m.y',
+            'dateFrom' => 'date_format:d.m.y H:i',
+            'dateTo' => 'date_format:d.m.y H:i',
             'checker' => 'string|exists:users,id'
         ]);
         if ($request->user()->role == 'superadmin') {
@@ -37,10 +37,10 @@ class StatisticsController extends Controller
         $checkers = $users->pluck('checkertasks')->flatten()->pluck('id');
         $data = Log::whereIn('checker_id', $checkers);
         if ($request->dateFrom) {
-            $data = $data->where('created_at', '>', Carbon::createFromFormat('d.m.y H:i', $request->dateFrom.' 00:00'));
+            $data = $data->where('created_at', '>', Carbon::createFromFormat('d.m.y H:i', $request->dateFrom));
         }
         if ($request->dateTo) {
-            $data = $data->where('created_at', '<', Carbon::createFromFormat('d.m.y H:i', $request->dateTo.' 23:59'));
+            $data = $data->where('created_at', '<', Carbon::createFromFormat('d.m.y H:i', $request->dateTo));
         }
         $data = $data->with(['checker' => function($query) {
             $query->select(['id', 'checker_id', 'url']);

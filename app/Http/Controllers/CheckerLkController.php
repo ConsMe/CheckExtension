@@ -7,6 +7,8 @@ use App\Checker;
 use App\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Telegram;
+// use Illuminate\Support\Facades\Log as LaravelLog;
 
 class CheckerLkController extends Controller
 {
@@ -89,6 +91,29 @@ class CheckerLkController extends Controller
                 'checker_id' => $request->id,
                 'status' => $request->code
             ]);
+            if ($request->code == 0) {
+                $checker->load([
+                    'user' => function($query) {
+                        $query->with('admins');
+                    }
+                ]);
+                $errorText = "CHECK UNDETECTED \nURL: ".$checker->url;
+                $checkerTelegramId = ($checker->user->telegram_auth) ? $checker->user->telegram_id : NULL;
+                if ($checkerTelegramId) {
+                    Telegram::sendMessage([
+                        'chat_id' => $checkerTelegramId,
+                        'text' => $errorText
+                    ]);
+                }
+                $errorText = "Чекер ".$checker->user->name."\n".$errorText;
+                foreach ($checker->user->admins as $admin) {
+                    if (!$admin->telegram_auth) continue;
+                    Telegram::sendMessage([
+                        'chat_id' => $admin->telegram_id,
+                        'text' => $errorText
+                    ]);
+                }
+            }
         }
         return $this->getMyCheckers($request);
     }
