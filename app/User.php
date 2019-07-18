@@ -43,6 +43,11 @@ class User extends Authenticatable
         return $this->hasMany('App\AdminHasChecker', 'admin_id', 'id');
     }
 
+    public function checkerrelations()
+    {
+        return $this->hasMany('App\AdminHasChecker', 'checker_id', 'id');
+    }
+
     public function checkertasks()
     {
         return $this->hasMany('App\Checker', 'checker_id', 'id');

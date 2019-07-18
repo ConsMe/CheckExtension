@@ -54,6 +54,7 @@ class SuperAdminController extends Controller
         $user = User::where('id', $request->id)->first();
         $user->logs()->delete();
         $user->checkertasks()->delete();
+        $user->checkerrelations()->delete();
         $user->delete();
         return $this->getAllChekers();
     }
