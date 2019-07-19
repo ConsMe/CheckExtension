@@ -105,13 +105,12 @@ class CheckerLkController extends Controller
                         'text' => $errorText
                     ]);
                 }
-                $errorText = ":bangbang:Чекер ".$checker->user->name."\n".$errorText;
+                $errorText = "Чекер ".$checker->user->name."\n".$errorText;
                 foreach ($checker->user->admins as $admin) {
                     if (!$admin->telegram_auth) continue;
                     Telegram::sendMessage([
                         'chat_id' => $admin->telegram_id,
-                        'text' => $errorText,
-                        'parse_mode' => 'HTML'
+                        'text' => $errorText
                     ]);
                 }
             }
