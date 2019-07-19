@@ -110,7 +110,8 @@ class CheckerLkController extends Controller
                     if (!$admin->telegram_auth) continue;
                     Telegram::sendMessage([
                         'chat_id' => $admin->telegram_id,
-                        'text' => $errorText
+                        'text' => $errorText,
+                        'parse_mode' => 'HTML'
                     ]);
                 }
             }
