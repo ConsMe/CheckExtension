@@ -97,7 +97,7 @@ class CheckerLkController extends Controller
                         $query->with('admins');
                     }
                 ]);
-                $errorText = "CHECK UNDETECTED \nURL: ".$checker->url;
+                $errorText = "ELEMENT UNDETECTED \nURL: ".$checker->url;
                 $checkerTelegramId = ($checker->user->telegram_auth) ? $checker->user->telegram_id : NULL;
                 if ($checkerTelegramId) {
                     Telegram::sendMessage([
