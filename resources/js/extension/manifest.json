@@ -1,7 +1,7 @@
 {
   "name": "Check Extension",
   "description": "If you want similar extension write to telegram @SI_IC or to email odn29@yandex.ru",
-  "version": "1.2",
+  "version": "1.3",
   "manifest_version": 2,
   "permissions": [
     "notifications",
@@ -27,7 +27,7 @@
     "default_title": "Check Extension"
   },
   "externally_connectable": {
-    "matches": ["*://*.checkextension.test/*", "*://*.alexander.shchetinin.fvds.ru/*"]
+    "matches": ["*://*.checkextension.test/*", "*://*.access.checker.fvds.ru/*"]
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnK73N8Au8DcUXY1dP+IukiqNrFYkAcxbxzsdcKegpJlGxv0nQw6vtV7HDPr7AeKG/867UUw3TBFqjG7OpooFqGtfos8oCGsDlxjQhZasuilZTFgqVK5WwfxW/nEvbj5HbBNhFytWl16BJya6TPLPDYzgdMB9UAZZi3nI6x1MC9InybkAE80Oj9sMaRd8X0U/E9CRqlr53JyA7x6M/OgIv6hKkQK9CQ3uO8HpSxL04djVNkRphG3cSmHcvQIaB5+0wAXo75eYRTbmcd/mkg+o9ywJHXJ4diJ3FFO+rm3XmzPZQDmY0GXQ4J8VC7ksin1mDLQiHM0m6LJZWe2ozxjZKwIDAQAB"
 }
