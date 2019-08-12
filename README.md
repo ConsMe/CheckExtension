@@ -2,6 +2,7 @@
 setup user hiro  
 git clone https://github.com/ConsMe/CheckExtension.git to /home/hiro/  
 install LEMP  
+sudo timedatectl set-timezone Europe/Moscow  
 composer install  
 php artisan migrate  
 php artisan db:seed  

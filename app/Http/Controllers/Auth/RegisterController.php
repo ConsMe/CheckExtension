@@ -94,7 +94,7 @@ class RegisterController extends Controller
             $users = User::whereIn('role', ['admin', 'checker'])->with('checkers.user:id,name')->get(['id', 'name', 'role'])->groupBy('role')->toArray();
             return $users;
         } else {
-            $users = User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name']);
+            $users = User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
             return $users;
         }
 

@@ -127,6 +127,23 @@ class SuperAdminController extends Controller
         return $this->getAllUsers();
     }
 
+    public function changeErrorsCount(Request $request)
+    {
+        $request->validate([
+            'id' => [
+                'required',
+                'numeric',
+                Rule::exists('users')->where(function ($query) {
+                    $query->where('role', 'checker');
+                }),
+            ],
+            'parameter' => ['required', 'in:max_undetected_errors,max_uncompleted_errors'],
+            'value' => ['required', 'numeric', 'between:1,10'],
+        ]);
+        User::where('id', $request->id)->update([$request->parameter => $request->value]);
+        return $this->getAllChekers();
+    }
+
     private function getAllUsers()
     {
         return User::whereIn('role', ['admin', 'checker'])->with('checkers.user:id,name')->get(['id', 'name', 'role'])->groupBy('role')->toArray();
@@ -134,6 +151,6 @@ class SuperAdminController extends Controller
 
     private function getAllChekers()
     {
-        return User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name']);
+        return User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
     }
 }

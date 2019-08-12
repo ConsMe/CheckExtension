@@ -11,7 +11,9 @@ new Vue({
             add: false,
             delete: false,
             changepassword: false,
-            stop: false
+            stop: false,
+            max_undetected_errors: false,
+            max_uncompleted_errors: false
         },
         errors: {
             name: false,
@@ -20,7 +22,9 @@ new Vue({
         checkers: window.checkers,
         deleteCheckerId: null,
         stopCheckerId: null,
-        changePasswordId: null
+        changePasswordId: null,
+        max_undetected_errors: 1,
+        max_uncompleted_errors: 1
     },
     mounted() {
         $(this.$refs.confirmation).on('hidden.bs.modal', (e) => {
@@ -67,6 +71,25 @@ new Vue({
         }
     },
     methods: {
+        changeErrorsCount(parameter) {
+            this.disabled[parameter] = true
+            let id = this.changePasswordId
+            Http.post(`/checkers/change-errors-count`, {parameter: parameter, value: this[parameter], id})
+            .then(response => {
+                toastr.success(`Параметр изменен`)
+                this.checkers = response.data
+            })
+            .catch(error => {
+                if (error.response.data.errors) {
+                    toastr.warning(Object.entries(error.response.data.errors)[0][1][0])
+                    return
+                }
+                toastr.warning('Что-то пошло не так, попробуйте позднее')
+            })
+            .finally(() => {
+                this.disabled[parameter] = false
+            });
+        },
         passgen(password) {
             this[password] = chance.string({ length: 15, pool: this.symbols })
         },
@@ -135,8 +158,10 @@ new Vue({
                 this.disabled.stop = false
             });
         },
-        showChangeWindow(id) {
-            this.changePasswordId = id
+        showChangeWindow(checker) {
+            this.max_uncompleted_errors = checker.max_uncompleted_errors
+            this.max_undetected_errors = checker.max_undetected_errors
+            this.changePasswordId = checker.id
             $(this.$refs.changeData).modal('show')
         },
         changePassword() {
@@ -148,7 +173,7 @@ new Vue({
             Http.post(`/users/changepassword`, {id, password})
             .then(response => {
                 toastr.success(`Пароль чекера ${name} изменен`)
-                $(this.$refs.changeData).modal('hide')
+                // $(this.$refs.changeData).modal('hide')
             })
             .catch(error => {
                 if (error.response.data.errors) {

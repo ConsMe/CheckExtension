@@ -23,6 +23,7 @@ Route::group(['middleware' => ['web']], function () {
             Route::get('checkers', 'SuperAdminController@getCheckers')->name('checkers');
             Route::post('checkers/delete', 'SuperAdminController@deleteChecker');
             Route::post('checkers/stop', 'SuperAdminController@stopChecker');
+            Route::post('checkers/change-errors-count', 'SuperAdminController@changeErrorsCount');
             Route::post('users/changepassword', 'SuperAdminController@changePassword');
         });
         Route::group(['middleware' => ['role:superadmin,admin']], function () {
@@ -43,7 +44,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
     Route::post('login', 'Auth\LoginController@login');
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
-
+    Route::get('get-current-time', function() {
+        return time();
+    });
     // Route::get('/home', 'HomeController@index')->name('home');
 });
 

@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'api_token', 'force_logout', 'telegram_id', 'telegram_auth'
+        'name', 'email', 'password', 'role', 'api_token', 'force_logout', 'telegram_id', 'telegram_auth', 'max_undetected_errors', 'max_uncompleted_errors'
     ];
 
     /**

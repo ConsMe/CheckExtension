@@ -37,16 +37,16 @@ class StatisticsController extends Controller
         $checkers = $users->pluck('checkertasks')->flatten()->pluck('id');
         $data = Log::whereIn('checker_id', $checkers);
         if ($request->dateFrom) {
-            $data = $data->where('created_at', '>', Carbon::createFromFormat('d.m.y H:i', $request->dateFrom));
+            $data = $data->where('check_time', '>', Carbon::createFromFormat('d.m.y H:i', $request->dateFrom));
         }
         if ($request->dateTo) {
-            $data = $data->where('created_at', '<', Carbon::createFromFormat('d.m.y H:i', $request->dateTo));
+            $data = $data->where('check_time', '<', Carbon::createFromFormat('d.m.y H:i', $request->dateTo));
         }
         $data = $data->with(['checker' => function($query) {
             $query->select(['id', 'checker_id', 'url']);
         }, 'checker.user' => function($query) {
             $query->select(['id', 'name']);
-        }])->orderBy('created_at', 'DESC')->paginate(100)->toArray();
+        }])->orderBy('check_time', 'DESC')->paginate(100)->toArray();
         $data['checkers'] = $listCheckers;
         return $data;
     }

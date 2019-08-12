@@ -1,14 +1,13 @@
 let $ = require('jquery')
 
 chrome.runtime.onConnect.addListener(function(port) {
-    port.postMessage({m: 'hello'})
     port.onMessage.addListener(function(msg) {
         console.log(msg)
         if (!msg.pong) return
         setTimeout(() => {
             let search = $('html').html().indexOf(msg.search)
             port.postMessage({reply: true, result: search})
-        }, 2000);
+        }, 2000)
     });
 });
 

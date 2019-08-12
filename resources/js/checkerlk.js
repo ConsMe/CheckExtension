@@ -119,6 +119,10 @@ new Vue({
         },
         exit() {
             this.disabled.exit = true
+            if (!chrome.runtime) {
+                $('#logout-form').submit()
+                return
+            }
             chrome.runtime.sendMessage(this.extensionId, {exit: true}, response => {
                 $('#logout-form').submit()
             })

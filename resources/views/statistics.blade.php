@@ -52,7 +52,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="log in logs" :key="log.id" >
-                                    <td>{{ moment(log.created_at).format('DD.MM.YY HH:mm') }}</td>
+                                    <td>{{ moment(log.check_time).format('DD.MM.YY HH:mm') }}</td>
                                     <td>{{ log.checker.user.name }}</td>
                                     <td>{{ log.checker.url }}</td>
                                     <td>{{ log.status == 1 ? 'OK' : 'ERROR' }}</td>
