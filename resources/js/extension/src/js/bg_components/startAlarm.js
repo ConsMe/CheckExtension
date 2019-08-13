@@ -14,7 +14,7 @@ export default function startAlarm() {
             let storage = await chromep.storage.local.get(null)
             Object.keys(storage).filter(key => key.indexOf('checker') >= 0).forEach(async (k) => {
                 let checker = storage[k]
-                let minuteDifference = Math.round((correctedTime - new Date(checker.started_at).getTime()) / 60000)
+                let minuteDifference = Math.round((correctedTime - new Date(checker.started_at + ' GMT+03').getTime()) / 60000)
                 if (minuteDifference < 0) return
                 if (checker.interval > 1 && minuteDifference % checker.interval > 0) return
                 if (checker.lastCheck == correctedTime) return
