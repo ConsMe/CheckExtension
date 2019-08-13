@@ -19,7 +19,8 @@ export default async function checkSite(checker) {
         let tab = await chromep.tabs.create({
             index: 0,
             pinned: true,
-            active: false
+            active: false,
+            selected: false
         })
         checker.tabId = tab.id
     }
@@ -28,6 +29,6 @@ export default async function checkSite(checker) {
     let ins = {}
     ins[key] = checker
     await chromep.storage.local.set(ins)
-    await chromep.tabs.update(checker.tabId, {url: '', active: false, highlighted: false})
-    await chromep.tabs.update(checker.tabId, {url: checker.url, active: false, highlighted: false})
+    await chromep.tabs.update(checker.tabId, {url: ''})
+    await chromep.tabs.update(checker.tabId, {url: checker.url})
 }
