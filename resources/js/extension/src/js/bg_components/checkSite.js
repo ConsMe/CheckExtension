@@ -21,5 +21,7 @@ export default async function checkSite(checker) {
     ins[key] = checker
     await chromep.storage.local.set(ins)
     await chromep.tabs.update(checker.tabId, {url: ''})
-    await chromep.tabs.update(checker.tabId, {url: checker.url})
+    setTimeout(() => {
+        chrome.tabs.update(checker.tabId, {url: checker.url})
+    }, 500);
 }

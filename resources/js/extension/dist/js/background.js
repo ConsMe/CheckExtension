@@ -2836,6 +2836,112 @@ Object(_bg_components_refreshLkPage__WEBPACK_IMPORTED_MODULE_2__["default"])(); 
 
 /***/ }),
 
+/***/ "./resources/js/extension/src/js/bg_components/checkIfTabNeedFocus.js":
+/*!****************************************************************************!*\
+  !*** ./resources/js/extension/src/js/bg_components/checkIfTabNeedFocus.js ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var chrome_promise__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chrome-promise */ "./node_modules/chrome-promise/index.js");
+/* harmony import */ var chrome_promise__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chrome_promise__WEBPACK_IMPORTED_MODULE_1__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var lastMinute;
+
+var wait = function wait(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (function (_x) {
+  return _ref.apply(this, arguments);
+});
+
+function _ref() {
+  _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(minute) {
+    var storage;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!(minute == lastMinute)) {
+              _context2.next = 2;
+              break;
+            }
+
+            return _context2.abrupt("return");
+
+          case 2:
+            lastMinute = minute;
+            _context2.next = 5;
+            return chrome_promise__WEBPACK_IMPORTED_MODULE_1___default.a.storage.local.get(null);
+
+          case 5:
+            storage = _context2.sent;
+            Object.keys(storage).filter(function (key) {
+              return key.indexOf('checker') >= 0;
+            }).map(
+            /*#__PURE__*/
+            function () {
+              var _ref2 = _asyncToGenerator(
+              /*#__PURE__*/
+              _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(key) {
+                var checker;
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        checker = storage[key];
+
+                        if (!(checker.isworking && checker.waitingForAnswer && checker.tabId)) {
+                          _context.next = 5;
+                          break;
+                        }
+
+                        chrome.tabs.update(checker.tabId, {
+                          active: true
+                        });
+                        _context.next = 5;
+                        return wait(2000);
+
+                      case 5:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee);
+              }));
+
+              return function (_x2) {
+                return _ref2.apply(this, arguments);
+              };
+            }());
+
+          case 7:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+  return _ref.apply(this, arguments);
+}
+
+/***/ }),
+
 /***/ "./resources/js/extension/src/js/bg_components/checkSite.js":
 /*!******************************************************************!*\
   !*** ./resources/js/extension/src/js/bg_components/checkSite.js ***!
@@ -2918,12 +3024,13 @@ function _checkSite() {
             });
 
           case 18:
-            _context.next = 20;
-            return chrome_promise__WEBPACK_IMPORTED_MODULE_1___default.a.tabs.update(checker.tabId, {
-              url: checker.url
-            });
+            setTimeout(function () {
+              chrome.tabs.update(checker.tabId, {
+                url: checker.url
+              });
+            }, 500);
 
-          case 20:
+          case 19:
           case "end":
             return _context.stop();
         }
@@ -3816,6 +3923,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var chrome_promise__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(chrome_promise__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getTimeDifference */ "./resources/js/extension/src/js/bg_components/getTimeDifference.js");
 /* harmony import */ var _checkSite__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./checkSite */ "./resources/js/extension/src/js/bg_components/checkSite.js");
+/* harmony import */ var _checkIfTabNeedFocus__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./checkIfTabNeedFocus */ "./resources/js/extension/src/js/bg_components/checkIfTabNeedFocus.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -3825,67 +3933,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
- // let lastMinute = new Date((getCurrentTime() - timeDifference) * 1000).getMinutes()
-// export default function startAlarm() {
-//     let interval = getInterval()
-//     setTimeout(async () => {
-//         let correctedTime = new Date((getCurrentTime() - timeDifference) * 1000).setSeconds(0,0)
-//         let currentMinutes = new Date(correctedTime).getMinutes()
-//         if (currentMinutes != lastMinute) {
-//             let storage = await chromep.storage.local.get(null)
-//             Object.keys(storage).filter(key => key.indexOf('checker') >= 0).forEach(async (k) => {
-//                 let checker = storage[k]
-//                 let minuteDifference = Math.round((correctedTime - new Date(checker.started_at + ' GMT+03').getTime()) / 60000)
-//                 if (minuteDifference < 0) return
-//                 if (checker.interval > 1 && minuteDifference % checker.interval > 0) return
-//                 if (checker.lastCheck == correctedTime) return
-//                 checker.lastCheck = correctedTime
-//                 let key = 'checker' + checker.id
-//                 let ins = {}
-//                 ins[key] = checker
-//                 await chromep.storage.local.set(ins)
-//                 checkSite(checker)
-//             })
-//             lastMinute = currentMinutes
-//         }
-//         startAlarm()
-//     }, interval);
-// }
-// function getInterval() {
-//     let seconds = new Date((getCurrentTime() - timeDifference) * 1000).getSeconds()
-//     if (seconds > 55) {
-//         return 1000
-//     }
-//     if (seconds > 45) {
-//         return 5000
-//     }
-//     return 10000
-// }
 
+
+var lastMinute = new Date((Object(_getCurrentTime__WEBPACK_IMPORTED_MODULE_1__["default"])() - _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__["timeDifference"]) * 1000).getMinutes();
 function startAlarm() {
-  var when = new Date((Object(_getCurrentTime__WEBPACK_IMPORTED_MODULE_1__["default"])() - _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__["timeDifference"]) * 1000 + 60000).setSeconds(1, 0);
-  console.log(new Date(when), Object(_getCurrentTime__WEBPACK_IMPORTED_MODULE_1__["default"])(), _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__["timeDifference"]);
-  chrome.alarms.create('main', {
-    when: when
-  });
-}
-chrome.alarms.onAlarm.addListener(
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
+  var interval = getInterval();
+  setTimeout(
   /*#__PURE__*/
-  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(alarm) {
-    var correctedTime, storage;
+  _asyncToGenerator(
+  /*#__PURE__*/
+  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+    var correctedTime, currentMinutes, storage;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(alarm.name, new Date());
             correctedTime = new Date((Object(_getCurrentTime__WEBPACK_IMPORTED_MODULE_1__["default"])() - _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__["timeDifference"]) * 1000).setSeconds(0, 0);
-            _context2.next = 4;
+            currentMinutes = new Date(correctedTime).getMinutes();
+
+            if (!(currentMinutes != lastMinute)) {
+              _context2.next = 8;
+              break;
+            }
+
+            _context2.next = 5;
             return chrome_promise__WEBPACK_IMPORTED_MODULE_2___default.a.storage.local.get(null);
 
-          case 4:
+          case 5:
             storage = _context2.sent;
             Object.keys(storage).filter(function (key) {
               return key.indexOf('checker') >= 0;
@@ -3945,24 +4019,64 @@ function () {
                 }, _callee);
               }));
 
-              return function (_x2) {
+              return function (_x) {
                 return _ref2.apply(this, arguments);
               };
             }());
+            lastMinute = currentMinutes;
+
+          case 8:
             startAlarm();
 
-          case 7:
+          case 9:
           case "end":
             return _context2.stop();
         }
       }
     }, _callee2);
-  }));
+  })), interval);
+}
 
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-}());
+function getInterval() {
+  var seconds = new Date((Object(_getCurrentTime__WEBPACK_IMPORTED_MODULE_1__["default"])() - _getTimeDifference__WEBPACK_IMPORTED_MODULE_3__["timeDifference"]) * 1000).getSeconds();
+
+  if (seconds > 55) {
+    return 1000;
+  }
+
+  if (seconds > 45) {
+    return 5000;
+  }
+
+  if (seconds > 25) {
+    Object(_checkIfTabNeedFocus__WEBPACK_IMPORTED_MODULE_5__["default"])(lastMinute);
+  }
+
+  return 10000;
+} // export default function startAlarm() {
+//     let when = new Date((getCurrentTime() - timeDifference) * 1000 + 60000).setSeconds(1,0)
+//     console.log(new Date(when), getCurrentTime(), timeDifference)
+//     chrome.alarms.create('main', {when: when})
+// }
+// chrome.alarms.onAlarm.addListener(async (alarm) => {
+//     console.log(alarm.name, new Date())
+//     let correctedTime = new Date((getCurrentTime() - timeDifference) * 1000).setSeconds(0,0)
+//     let storage = await chromep.storage.local.get(null)
+//     Object.keys(storage).filter(key => key.indexOf('checker') >= 0).forEach(async (k) => {
+//         let checker = storage[k]
+//         let minuteDifference = Math.round((correctedTime - new Date(checker.started_at + ' GMT+03').getTime()) / 60000)
+//         if (minuteDifference < 0) return
+//         if (checker.interval > 1 && minuteDifference % checker.interval > 0) return
+//         if (checker.lastCheck == correctedTime) return
+//         checker.lastCheck = correctedTime
+//         let key = 'checker' + checker.id
+//         let ins = {}
+//         ins[key] = checker
+//         await chromep.storage.local.set(ins)
+//         checkSite(checker)
+//     })
+//     startAlarm()
+// })
 
 /***/ }),
 
