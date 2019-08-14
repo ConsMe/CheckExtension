@@ -44,6 +44,7 @@ class CheckWebhook extends Command
         $response = $client->get($url.'getWebhookInfo');
         if ($response->getStatusCode() != 200) return;
         $body = json_decode($response->getBody(), TRUE);
+        $this->info($body);
         if (!isset($body['ok']) || !$body['ok'] || !isset($body['result']['url']) || strlen(isset($body['result']['url']))) {
             $this->info('Webhook is already setted up');
             return;
