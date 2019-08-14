@@ -49,7 +49,7 @@ class CheckWebhook extends Command
             $this->info('Query error');
             return;
         }
-        if (!isset($body['result']['url']) || strlen(isset($body['result']['url']))) {
+        if (!isset($body['result']['url']) || strlen($body['result']['url'])) {
             $this->info('Webhook is already setted up');
             $this->info(strlen(isset($body['result']['url'])));
             return;
