@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use  GuzzleHttp\Client;
 use Telegram;
+use Illuminate\Support\Facades\Log;
 
 class CheckWebhook extends Command
 {
@@ -44,14 +45,12 @@ class CheckWebhook extends Command
         $response = $client->get($url.'getWebhookInfo');
         if ($response->getStatusCode() != 200) return;
         $body = json_decode($response->getBody(), TRUE);
-        // $this->info($body);
-        if (!isset($body['ok']) || !$body['ok']) {
+        if (!isset($body['ok']) || !$body['ok'] || !isset($body['result']['url'])) {
             $this->info('Query error');
             return;
         }
-        if (!isset($body['result']['url']) || strlen($body['result']['url'])) {
+        if (strlen($body['result']['url'])) {
             $this->info('Webhook is already setted up');
-            $this->info(strlen(isset($body['result']['url'])));
             return;
         }
         Telegram::setWebhook(['url' => env('APP_URL').'/'.env('TELEGRAM_BOT_TOKEN').'/webhook']);

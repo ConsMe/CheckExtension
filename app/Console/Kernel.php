@@ -70,6 +70,8 @@ class Kernel extends ConsoleKernel
                 }
             }
         })->everyMinute();
+
+        $schedule->command('check:webhook')->hourly();
     }
 
     /**
