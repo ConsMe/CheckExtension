@@ -51,6 +51,7 @@ class CheckWebhook extends Command
         }
         if (!isset($body['result']['url']) || strlen(isset($body['result']['url']))) {
             $this->info('Webhook is already setted up');
+            $this->info(strlen(isset($body['result']['url'])));
             return;
         }
         Telegram::setWebhook(['url' => env('APP_URL').'/'.env('TELEGRAM_BOT_TOKEN').'/webhook']);
