@@ -7,6 +7,7 @@ use App\User;
 use App\AdminHasChecker;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class SuperAdminController extends Controller
 {
@@ -146,11 +147,60 @@ class SuperAdminController extends Controller
 
     private function getAllUsers()
     {
-        return User::whereIn('role', ['admin', 'checker'])->with('checkers.user:id,name')->get(['id', 'name', 'role'])->groupBy('role')->toArray();
+        return User::whereIn('role', ['admin', 'checker'])
+            ->with('checkers.user:id,name')
+            ->get([
+                'id', 'name', 'role', 'has_access_to_checkers', 'can_add_edit_checkers', 'max_allowed_checker_tasks'
+            ])
+            ->groupBy('role')->toArray();
     }
 
     private function getAllChekers()
     {
-        return User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
+        return User::where('role', 'checker')
+            ->with('checkertasks:id,checker_id,url,isworking')
+            ->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
+    }
+
+    public function toggleCheckersAccess(Request $request)
+    {
+        $data = $request->validate([
+            'admin_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', 'admin');
+                }),
+            ],
+            'has_access_to_checkers' => 'required_without:can_add_edit_checkers|boolean',
+            'can_add_edit_checkers' => 'required_without:has_access_to_checkers|boolean',
+        ]);
+        unset($data['admin_id']);
+        $user = User::find($request->admin_id);
+        if ($request->has('has_access_to_checkers') && !$data['has_access_to_checkers']) {
+            $data['can_add_edit_checkers'] = false;
+        }
+        if ($request->can_add_edit_checkers) {
+            $data['max_allowed_checker_tasks'] = 1;
+        }
+        $user->update($data);
+        return $this->getAllUsers();
+    }
+
+    public function setMaxCheckers(Request $request)
+    {
+        $request->validate([
+            'admin_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', 'admin');
+                }),
+            ],
+            'quantity' => 'required|integer|min:1'
+        ]);
+        $user = User::find($request->admin_id);
+        $user->update(['max_allowed_checker_tasks' => $request->quantity]);
+        return $this->getAllUsers();
     }
 }

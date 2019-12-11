@@ -70,7 +70,11 @@
         </div>
         <div role="dialog" tabindex="-1" class="modal" ref="changeadminwindow">
             <div class="modal-dialog modal-lg" role="document">
-                <change-admin :choosedadmin="choosedAdmin" :checkers="checkers" v-if="choosedAdmin" @refreshdata="refreshData" ></change-admin>
+                <change-admin
+                    :choosedadmin="choosedAdmin"
+                    :checkers="checkers"
+                    v-if="choosedAdmin"
+                    @refreshdata="refreshData" />
             </div>
         </div>
         @endverbatim

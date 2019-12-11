@@ -14,11 +14,12 @@
 Route::group(['middleware' => ['web']], function () {
     Route::group(['middleware' => ['forceLogout', 'auth']], function () {
         Route::group(['middleware' => ['role:superadmin']], function () {
-            // Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
             Route::post('register/{role}', 'Auth\RegisterController@register')->where('role', 'admin|checker');
             Route::get('admins', 'SuperAdminController@getAdmins')->name('admins');
             Route::post('admins/delete', 'SuperAdminController@deleteAdmin');
             Route::post('admins/addchecker', 'SuperAdminController@addChecker');
+            Route::post('admins/toggle-checkers-access', 'SuperAdminController@toggleCheckersAccess');
+            Route::post('admins/set-max-allowed-checkers', 'SuperAdminController@setMaxCheckers');
             Route::post('admins/removechecker', 'SuperAdminController@removeChecker');
             Route::get('checkers', 'SuperAdminController@getCheckers')->name('checkers');
             Route::post('checkers/delete', 'SuperAdminController@deleteChecker');
@@ -44,10 +45,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
     Route::post('login', 'Auth\LoginController@login');
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
-    Route::get('get-current-time', function() {
+    Route::get('get-current-time', function () {
         return time();
     });
-    // Route::get('/home', 'HomeController@index')->name('home');
 });
 
 Route::post(env('TELEGRAM_BOT_TOKEN').'/webhook', 'TelegramController@webhook')->name('telegram');

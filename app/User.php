@@ -16,7 +16,19 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'api_token', 'force_logout', 'telegram_id', 'telegram_auth', 'max_undetected_errors', 'max_uncompleted_errors'
+        'name',
+        'email',
+        'password',
+        'role',
+        'api_token',
+        'force_logout',
+        'telegram_id',
+        'telegram_auth',
+        'max_undetected_errors',
+        'max_uncompleted_errors',
+        'has_access_to_checkers',
+        'can_add_edit_checkers',
+        'max_allowed_checker_tasks',
     ];
 
     /**

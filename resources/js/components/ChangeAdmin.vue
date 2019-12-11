@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-content">
+    <div class="modal-content change-admin-block">
         <div class="modal-header">
             <h4 class="modal-title">{{ 'Админ ' + admin.name }}</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -30,6 +30,45 @@
                     </div>
                 </div>
             </div>
+            <div class="row justify-content-center">
+                <div class="col-auto text-left">
+                    <div class="form-group mt-4">
+                        <div class="custom-control custom-switch mb-2">
+                            <input
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="customSwitch1"
+                                :disabled="disabled.accesses"
+                                v-model="has_access_to_checkers">
+                            <label class="custom-control-label" for="customSwitch1">Checker page permission</label>
+                        </div>
+                        <div class="custom-control custom-switch">
+                            <input
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="customSwitch2"
+                                :disabled="!has_access_to_checkers || disabled.accesses"
+                                v-model="can_add_edit_checkers">
+                            <label class="custom-control-label" for="customSwitch2">Add/edit checker permission</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form
+              class="form-inline justify-content-center mt-1"
+              v-show="can_add_edit_checkers"
+              @submit.prevent="setMaxCheckers">
+              <label class="mr-2">Макс. кол-во задач для 1 чекера</label>
+              <input
+                type="number"
+                class="form-control mr-2 text-center"
+                style="width: 5rem;"
+                v-model="maxCheckers"
+                autocomplete="off"
+                :disabled="disabled.maxCheckers"
+                required>
+              <button type="submit" class="btn btn-primary" :disabled="disabled.maxCheckers" >Изменить</button>
+            </form>
             <form class="form-inline justify-content-center mt-5" @submit.prevent="changePassword">
                 <label class="mr-2">Изменить пароль</label>
                 <input type="text" class="form-control mr-2" v-model="newpassword" placeholder="Новый пароль" autocomplete="off" :disabled="disabled.newpassword" required>
@@ -57,8 +96,13 @@
                 newpassword: '',
                 symbols: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
                 disabled: {
-                    newpassword: false
-                }
+                    newpassword: false,
+                    accesses: false,
+                    maxCheckers: false,
+                },
+                has_access_to_checkers: this.choosedadmin.has_access_to_checkers,
+                can_add_edit_checkers: this.choosedadmin.can_add_edit_checkers,
+                maxCheckers: this.choosedadmin.max_allowed_checker_tasks,
             }
         },
         computed: {
@@ -74,10 +118,60 @@
                 return this.admin.checkers.sort((checker1,checker2) => -(checker1.user.name < checker2.user.name) || +(checker1.user.name > checker2.user.name))
             }
         },
+        watch: {
+            has_access_to_checkers(nv) {
+                if (!nv) this.can_add_edit_checkers = false;
+                this.toggleCheckersAccess('has_access_to_checkers');
+            },
+            can_add_edit_checkers(nv) {
+                if (this.has_access_to_checkers) {
+                    this.toggleCheckersAccess('can_add_edit_checkers');
+                }
+                if (nv) {
+                    this.maxCheckers = 1;
+                }
+            },
+        },
         created() {
             console.log(this.admin)
         },
         methods: {
+            setMaxCheckers() {
+                this.$set(this.disabled, 'maxCheckers', true);
+                Http.post('admins/set-max-allowed-checkers', {admin_id: this.admin.id, quantity: this.maxCheckers})
+                .then(response => {
+                    toastr.success('Количество чекеров изменено');
+                    this.$emit('refreshdata', response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.data.errors) {
+                        toastr.warning(Object.entries(error.response.data.errors)[0][1][0])
+                        return;
+                    }
+                    toastr.warning('Что-то пошло не так, попробуйте позднее')
+                })
+                .finally(() => {
+                    this.$set(this.disabled, 'maxCheckers', false);
+                })
+            },
+            toggleCheckersAccess(access) {
+                this.$set(this.disabled, 'accesses', true);
+                Http.post('admins/toggle-checkers-access', {admin_id: this.admin.id, [access]: this[access]})
+                .then(response => {
+                    toastr.success('Доступ к чекерам изменен');
+                    this.$emit('refreshdata', response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.data.errors) {
+                        toastr.warning(Object.entries(error.response.data.errors)[0][1][0])
+                        return;
+                    }
+                    toastr.warning('Что-то пошло не так, попробуйте позднее')
+                })
+                .finally(() => {
+                    this.$set(this.disabled, 'accesses', false);
+                })
+            },
             addChecker(id, name) {
                 Vue.set(this.checkers.filter(checker => checker.id == id)[0], 'disabled', true)
                 Http.post(`/admins/addchecker`, {checker_id: id, admin_id: this.admin.id})
@@ -148,3 +242,13 @@
         },
     }
 </script>
+
+<style lang="scss">
+.change-admin-block {
+    // .custom-control-label {
+    //     transform: scale(1.4);
+    //     font-size: .7rem;
+    //     line-height: 1.3rem;
+    // }
+}
+</style>
