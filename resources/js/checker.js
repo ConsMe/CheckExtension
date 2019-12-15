@@ -47,12 +47,12 @@ new Vue({
         $(this.$refs.exitConfirm).on('hidden.bs.modal', (e) => {
             this.disabled.exit = false
         })
-        $(this.$refs.exitButton).removeAttr('onclick')
-        .click(e => {
-            e.originalEvent.preventDefault()
-            e.originalEvent.stopPropagation()
-            $(this.$refs.exitConfirm).modal('show')
-        })
+        // $(this.$refs.exitButton).removeAttr('onclick')
+        // .click(e => {
+        //     e.originalEvent.preventDefault()
+        //     e.originalEvent.stopPropagation()
+        //     $(this.$refs.exitConfirm).modal('show')
+        // })
     },
     methods: {
         add() {
