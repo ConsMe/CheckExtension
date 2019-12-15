@@ -57,7 +57,7 @@ class CheckerLkController extends Controller
                 ]);
                 throw $error;
             }
-            AdminHasChecker::create(['admin_id' => auth()->user()->id, 'checker_id' => $request->checker_id]);
+            // AdminHasChecker::create(['admin_id' => auth()->user()->id, 'checker_id' => $request->checker_id]);
         }
         $fields = $request->all();
         if (auth()->user()->role === 'checker') {
