@@ -8,7 +8,8 @@ const presenceChannel = 'followTheCheckers';
 
 async function joinChannel(id) {
     if (!echo) {
-        let url = await chromep.storage.local.get('url').url
+        let url = await chromep.storage.local.get('url')
+        url = url.url
         if (url.substr(url.length - 1, 1) === '/') {
             url = url.substr(0, url.length - 2)
         }
