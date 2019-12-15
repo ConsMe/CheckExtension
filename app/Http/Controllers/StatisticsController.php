@@ -24,16 +24,19 @@ class StatisticsController extends Controller
             'checker' => 'string|exists:users,id'
         ]);
         if ($request->user()->role == 'superadmin') {
-            $users = User::where('role', 'checker');
+            $users = User::withTrashed()->where('role', 'checker');
         } else {
-            $users = $request->user()->checkers()->get()->pluck(['checker_id']);
-            $users = User::whereIn('id', $users);
+            $users = $request->user()->checkers()->withTrashed()->get()->pluck(['checker_id']);
+            $users = User::withTrashed()->whereIn('id', $users);
         }
         $listCheckers = $users->get()->pluck('name', 'id');
-        if($request->checker) {
+        // dd($listCheckers);
+        if ($request->checker) {
             $users = $users->where('id', $request->checker);
         }
-        $users = $users->with('checkertasks')->get();
+        $users = $users->with(['checkertasks' => function ($query) {
+            $query->withTrashed();
+        }])->get();
         $checkers = $users->pluck('checkertasks')->flatten()->pluck('id');
         $data = Log::whereIn('checker_id', $checkers);
         if ($request->dateFrom) {
@@ -42,10 +45,10 @@ class StatisticsController extends Controller
         if ($request->dateTo) {
             $data = $data->where('check_time', '<', Carbon::createFromFormat('d.m.y H:i', $request->dateTo));
         }
-        $data = $data->with(['checker' => function($query) {
-            $query->select(['id', 'checker_id', 'url']);
-        }, 'checker.user' => function($query) {
-            $query->select(['id', 'name']);
+        $data = $data->with(['checker' => function ($query) {
+            $query->withTrashed()->select(['id', 'checker_id', 'url']);
+        }, 'checker.user' => function ($query) {
+            $query->withTrashed()->select(['id', 'name']);
         }])->orderBy('check_time', 'DESC')->paginate(100)->toArray();
         $data['checkers'] = $listCheckers;
         return $data;

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import chromep from 'chrome-promise'
-import getCurrentTime from './getCurrentTime'
 
 let timeDifference = 0
 let timer

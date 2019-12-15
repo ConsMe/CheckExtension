@@ -27,6 +27,15 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('ifrole', function ($roles) {
             return in_array(auth()->user()->role, $roles);
         });
-
+        Blade::if('hasaccesstocheckers', function () {
+            $user = auth()->user();
+            $role = $user->role;
+            return $role === 'superadmin' || ($role === 'admin' && $user->has_access_to_checkers);
+        });
+        Blade::if('canaddeditcheckers', function () {
+            $user = auth()->user();
+            $role = $user->role;
+            return $role === 'superadmin' || ($role === 'admin' && $user->can_add_edit_checkers);
+        });
     }
 }

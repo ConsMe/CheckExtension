@@ -1,6 +1,7 @@
 {
     "/public/js/admin.js": "/public/js/admin.js",
     "/public/js/app.js": "/public/js/app.js",
+    "/public/js/checker.js": "/public/js/checker.js",
     "/public/js/checkerlk.js": "/public/js/checkerlk.js",
     "/public/js/checkers.js": "/public/js/checkers.js",
     "/public/js/statistics.js": "/public/js/statistics.js",

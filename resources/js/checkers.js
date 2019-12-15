@@ -1,6 +1,8 @@
 import Http from './Http';
+import Echo from "laravel-echo"
+window.io = require('socket.io-client');
 
-new Vue({
+window.vm = new Vue({
     el: '#app',
     data: {
         symbols: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -24,11 +26,36 @@ new Vue({
         stopCheckerId: null,
         changePasswordId: null,
         max_undetected_errors: 1,
-        max_uncompleted_errors: 1
+        max_uncompleted_errors: 1,
+        onlineId: [],
+        canAddEditCheckers: window.canAddEditCheckers,
+        withLogs: true,
+    },
+    created() {
+        const echo = new Echo({
+            broadcaster: 'socket.io',
+            host: window.location.hostname + ':6001',
+        });
+        echo.join('followTheCheckers')
+            .here((users) => {
+                this.onlineId = users.filter(u => u.id).map(u => u.id);
+            })
+            .joining((user) => {
+                if (!user.id || this.onlineId.includes(user.id)) return;
+                this.onlineId.push(user.id);
+            })
+            .leaving((user) => {
+                if (!user.id) return;
+                const index = this.onlineId.indexOf(user.id);
+                if (index >= 0) {
+                    this.onlineId.splice(index, 1);
+                }
+            });
     },
     mounted() {
         $(this.$refs.confirmation).on('hidden.bs.modal', (e) => {
             this.deleteCheckerId = null
+            this.withLogs = true
         })
         $(this.$refs.stopConfirmation).on('hidden.bs.modal', (e) => {
             this.stopCheckerId = null
@@ -122,14 +149,19 @@ new Vue({
             if (!this.deleteCheckerId) return
             this.disabled.delete = true
             let id = this.deleteCheckerId
+            let withLogs = this.withLogs
             $(this.$refs.confirmation).modal('hide')
             let name = this.checkers.filter(checker => checker.id == id)[0].name
-            Http.post(`/checkers/delete`, {id: id})
+            Http.post(`/checkers/delete`, {id, withLogs})
             .then(response => {
                 toastr.success(`Чекер ${name} удален`)
                 this.checkers = response.data
             })
             .catch(error => {
+                if (error.response.data && error.response.data.errors) {
+                    toastr.warning(Object.entries(error.response.data.errors)[0][1][0])
+                    return
+                }
                 toastr.warning('Что-то пошло не так, попробуйте позднее')
             })
             .finally(() => {

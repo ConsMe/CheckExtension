@@ -56,7 +56,7 @@
             </div>
             <form
               class="form-inline justify-content-center mt-1"
-              v-show="can_add_edit_checkers"
+              v-show="has_access_to_checkers"
               @submit.prevent="setMaxCheckers">
               <label class="mr-2">Макс. кол-во задач для 1 чекера</label>
               <input

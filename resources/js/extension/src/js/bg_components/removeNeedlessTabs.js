@@ -1,6 +1,6 @@
 import chromep from 'chrome-promise'
 
-export default async function () {
+async function removeNeedlessTabs () {
     let allTabs = await chromep.tabs.query({pinned: true})
     if (!allTabs.length) return
     allTabs = allTabs.map(tab => tab.id)
@@ -13,4 +13,11 @@ export default async function () {
             chrome.tabs.remove(t)
         }
     })
+}
+
+export default function () {
+    removeNeedlessTabs()
+    setInterval(() => {
+        removeNeedlessTabs()
+    }, 600000);
 }

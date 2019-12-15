@@ -49,7 +49,18 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        $user->force_logout = FALSE;
+        $user->force_logout = false;
         $user->save();
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+        $user->checkertasks()->update(['isworking' => false]);
+
+        return $this->loggedOut($request) ?: redirect('/');
     }
 }

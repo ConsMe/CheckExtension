@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\AdminHasChecker;
+use App\Events\CheckerForceDisconnect;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +21,12 @@ class SuperAdminController extends Controller
     public function getCheckers()
     {
         $checkers = $this->getAllChekers();
-        return view('checkers', compact(['checkers']));
+        if (auth()->user()->role === 'superadmin' || auth()->user()->can_add_edit_checkers) {
+            $canAddEditCheckers = 1;
+        } else {
+            $canAddEditCheckers = 0;
+        }
+        return view('checkers', compact(['checkers', 'canAddEditCheckers']));
     }
 
     public function deleteAdmin(Request $request)
@@ -50,13 +56,29 @@ class SuperAdminController extends Controller
                 Rule::exists('users')->where(function ($query) {
                     $query->where('role', 'checker');
                 })
-            ]
+            ],
+            'withLogs' => 'required|boolean'
         ]);
+        if (auth()->user()->role === 'admin') {
+            if (!AdminHasChecker::where(['admin_id' => auth()->user()->id, 'checker_id' => $request->id])->first()) {
+                $error = ValidationException::withMessages([
+                    'id' => ['У вас нет прав на удаление этого чекера. Перегрузите страницу.']
+                ]);
+                throw $error;
+            }
+        }
         $user = User::where('id', $request->id)->first();
-        $user->logs()->delete();
-        $user->checkertasks()->delete();
-        $user->checkerrelations()->delete();
-        $user->delete();
+        if ($request->withLogs) {
+            $user->logs()->delete();
+            $user->checkertasks()->withTrashed()->forceDelete();
+            $user->checkerrelations()->withTrashed()->forceDelete();
+            $user->forceDelete();
+        } else {
+            $user->checkertasks()->delete();
+            $user->checkerrelations()->delete();
+            $user->delete();
+        }
+        event(new CheckerForceDisconnect($request->id));
         return $this->getAllChekers();
     }
 
@@ -89,6 +111,15 @@ class SuperAdminController extends Controller
             'password' => ['required', 'string', 'min:8'],
         ]);
         $user = User::where('id', $request->id)->first();
+        if (auth()->user()->role === 'admin') {
+            $condition = ['admin_id' => auth()->user()->id, 'checker_id' => $request->id];
+            if ($user->role !== 'checker' || !AdminHasChecker::where($condition)->first()) {
+                $error = ValidationException::withMessages([
+                    'id' => ['У вас нет прав на выполнение этого действия. Перегрузите страницу.']
+                ]);
+                throw $error;
+            }
+        }
         $user->update([
             'password' => Hash::make($request->password),
             'api_token' => str_random(60),
@@ -108,10 +139,18 @@ class SuperAdminController extends Controller
             'checker_id' => ['required', 'numeric', 'exists:users,id'],
             'admin_id' => ['required', 'numeric', 'exists:users,id'],
         ]);
-        AdminHasChecker::firstOrCreate([
+        $isRelation =  AdminHasChecker::withTrashed()->where([
             'checker_id' => $request->checker_id,
             'admin_id' => $request->admin_id
-        ]);
+        ])->first();
+        if (!$isRelation) {
+            AdminHasChecker::create([
+                'checker_id' => $request->checker_id,
+                'admin_id' => $request->admin_id
+            ]);
+        } else {
+            $isRelation->update(['deleted_at' => null]);
+        }
         return $this->getAllUsers();
     }
 
@@ -121,10 +160,10 @@ class SuperAdminController extends Controller
             'checker_id' => ['required', 'numeric'],
             'admin_id' => ['required', 'numeric'],
         ]);
-        AdminHasChecker::where([
+        AdminHasChecker::withTrashed()->where([
             'checker_id' => $request->checker_id,
             'admin_id' => $request->admin_id
-        ])->delete();
+        ])->forceDelete();
         return $this->getAllUsers();
     }
 
@@ -141,6 +180,14 @@ class SuperAdminController extends Controller
             'parameter' => ['required', 'in:max_undetected_errors,max_uncompleted_errors'],
             'value' => ['required', 'numeric', 'between:1,10'],
         ]);
+        if (auth()->user()->role === 'admin') {
+            if (!AdminHasChecker::where(['admin_id' => auth()->user()->id, 'checker_id' => $request->id])->first()) {
+                $error = ValidationException::withMessages([
+                    'id' => ['У вас нет прав на редактирование этого чекера. Перегрузите страницу.']
+                ]);
+                throw $error;
+            }
+        }
         User::where('id', $request->id)->update([$request->parameter => $request->value]);
         return $this->getAllChekers();
     }
@@ -157,9 +204,12 @@ class SuperAdminController extends Controller
 
     private function getAllChekers()
     {
-        return User::where('role', 'checker')
-            ->with('checkertasks:id,checker_id,url,isworking')
-            ->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
+        $checkers = User::where('role', 'checker')
+            ->with('checkertasks:id,checker_id,url,isworking');
+        if (auth()->user()->role === 'admin') {
+            $checkers->whereIn('id', auth()->user()->checkers()->pluck('checker_id'));
+        }
+        return $checkers->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
     }
 
     public function toggleCheckersAccess(Request $request)
@@ -180,7 +230,7 @@ class SuperAdminController extends Controller
         if ($request->has('has_access_to_checkers') && !$data['has_access_to_checkers']) {
             $data['can_add_edit_checkers'] = false;
         }
-        if ($request->can_add_edit_checkers) {
+        if ($request->has_access_to_checkers) {
             $data['max_allowed_checker_tasks'] = 1;
         }
         $user->update($data);

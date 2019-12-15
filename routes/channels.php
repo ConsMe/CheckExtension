@@ -11,6 +11,16 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+Broadcast::channel('followTheCheckers', function ($user) {
+    $role = $user->role;
+    if ($role === 'superadmin' || ($role === 'admin' && $user->has_access_to_checkers)) {
+        return ['id' => null];
+    }
+    if ($role === 'checker') {
+        return ['id' => $user->id];
+    }
+    return false;
+});
+Broadcast::channel('checker.{id}', function ($user, $id) {
+    return (string) $user->id === $id;
 });

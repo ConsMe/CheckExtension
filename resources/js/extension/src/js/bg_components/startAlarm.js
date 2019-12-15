@@ -3,6 +3,7 @@ import chromep from 'chrome-promise'
 import {timeDifference} from './getTimeDifference'
 import checkSite from './checkSite'
 import checkIfTabNeedFocus from './checkIfTabNeedFocus'
+// import removeNeedlessTabs from './bg_components/removeNeedlessTabs'
 
 let lastMinute = new Date((getCurrentTime() - timeDifference) * 1000).getMinutes()
 

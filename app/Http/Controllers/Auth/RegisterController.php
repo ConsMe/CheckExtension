@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\AdminHasChecker;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -89,13 +90,27 @@ class RegisterController extends Controller
 
         event(new Registered($user = $this->create($request->all(), $role)));
 
+        if (auth()->user()->role === 'admin') {
+            AdminHasChecker::create([
+                'admin_id' => auth()->user()->id,
+                'checker_id' => $user->id
+            ]);
+        }
         // $this->guard()->login($user);
         if ($role == 'admin') {
-            $users = User::whereIn('role', ['admin', 'checker'])->with('checkers.user:id,name')->get(['id', 'name', 'role'])->groupBy('role')->toArray();
+            $users = User::whereIn('role', ['admin', 'checker'])
+                ->with('checkers.user:id,name')
+                ->get(['id', 'name', 'role'])
+                ->groupBy('role')
+                ->toArray();
             return $users;
         } else {
-            $users = User::where('role', 'checker')->with('checkertasks:id,checker_id,url,isworking')->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
-            return $users;
+            $users = User::where('role', 'checker')
+                ->with('checkertasks:id,checker_id,url,isworking');
+            if (auth()->user()->role === 'admin') {
+                $users->whereIn('id', auth()->user()->checkers()->pluck('checker_id'));
+            }
+            return $users->get(['id', 'name', 'max_uncompleted_errors', 'max_undetected_errors']);
         }
 
         // return $this->registered($request, $user) ?: redirect($this->redirectPath());

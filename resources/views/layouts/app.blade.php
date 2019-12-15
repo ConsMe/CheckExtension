@@ -70,10 +70,12 @@
                                 <li class="nav-item {{ Route::current()->getName() == 'admins' ? 'active' : ''}}">
                                     <a class="nav-link" href="{{ route('admins') }}">Админы</a>
                                 </li>
+                            @endifrole
+                            @hasaccesstocheckers
                                 <li class="nav-item {{ Route::current()->getName() == 'checkers' ? 'active' : ''}}">
                                     <a class="nav-link" href="{{ route('checkers') }}">Чекеры</a>
                                 </li>
-                            @endifrole
+                            @endhasaccesstocheckers
                             @ifrole(['admin', 'superadmin'])
                                 <li class="nav-item {{ Route::current()->getName() == 'statistics' ? 'active' : ''}}">
                                     <a class="nav-link" href="{{ route('statistics') }}">Статистика</a>

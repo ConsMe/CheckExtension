@@ -1,4 +1,6 @@
 import Http from './Http';
+import Echo from "laravel-echo"
+window.io = require('socket.io-client');
 
 new Vue({
     el: '#app',
@@ -14,15 +16,29 @@ new Vue({
         checkers: window.checkers,
         deleteCheckerId: null,
         extensionId: 'ochcllcealknpgfmcbdcileoboabcikp',
-        notSettedUp: false,
-        extensionVersion: window.extensionVersion,
-        warningVersion: false,
-        id: window.id,
+        checkerId: window.checkerId,
+        online: false,
         delay: 1,
         withLogs: true,
     },
+    created() {
+        const echo = new Echo({
+            broadcaster: 'socket.io',
+            host: window.location.hostname + ':6001',
+        });
+        echo.join('followTheCheckers')
+            .here((users) => {
+                const checker = users.find(u => u.id === this.checkerId);
+                if (checker) this.online = true;
+            })
+            .joining((user) => {
+                if (user.id === this.checkerId) this.online = true;
+            })
+            .leaving((user) => {
+                if (user.id === this.checkerId) this.online = false;
+            });
+    },
     mounted() {
-        this.checkSettedUp()
         $(this.$refs.confirmation).on('hidden.bs.modal', (e) => {
             this.deleteCheckerId = null
             this.withLogs = true
@@ -41,14 +57,13 @@ new Vue({
         add() {
             let {url, search, interval, delay} = this.$data
             this.disabled.add = true
-            Http.post('/checker/add', {url, search, interval, delay})
+            Http.post('/checker/add', { url, search, interval, delay, checker_id: this.checkerId })
             .then(r => {
                 toastr.success('Чекер добавлен')
                 this.checkers = r.data
                 this.url = ''
                 this.search = ''
                 this.interval = 5
-                chrome.runtime.sendMessage(this.extensionId, {refreshCheckers: true, checkers: this.checkers})
             })
             .catch(error => {
                 if (error.response.data.errors) {
@@ -62,7 +77,6 @@ new Vue({
             });
         },
         stopstart(checker) {
-            console.log(checker)
             let {id, isworking} = checker
             isworking = !isworking
             checker.disabled = true
@@ -71,7 +85,6 @@ new Vue({
                 let status = isworking ? 'запущен' : 'остановлен'
                 toastr.success(`Чекер ${status}`)
                 this.checkers = r.data
-                chrome.runtime.sendMessage(this.extensionId, {refreshCheckers: true, checkers: this.checkers})
             })
             .catch(error => {
                 checker.disabled = false
@@ -96,7 +109,6 @@ new Vue({
             .then(response => {
                 toastr.success(`Чекер удален`)
                 this.checkers = response.data
-                chrome.runtime.sendMessage(this.extensionId, {refreshCheckers: true, checkers: this.checkers})
             })
             .catch(error => {
                 toastr.warning('Что-то пошло не так, попробуйте позднее')
@@ -105,37 +117,9 @@ new Vue({
                 this.disabled.delete = false
             });
         },
-        checkSettedUp() {
-            if (!chrome.runtime) {
-                this.notSettedUp = true
-                return
-            }
-            chrome.runtime.sendMessage(this.extensionId, {
-                isSettedUp: true,
-                checkers: this.checkers,
-                url: window.location.origin + '/',
-                id: this.id,
-            }, response => {
-                let lastError = chrome.runtime.lastError
-                if (lastError || !response.settedUp) {
-                    this.notSettedUp = true
-                    return
-                }
-                if (response.version != this.extensionVersion) {
-                    this.warningVersion = true
-                    return
-                }
-            })
-        },
         exit() {
             this.disabled.exit = true
-            if (!chrome.runtime) {
-                $('#logout-form').submit()
-                return
-            }
-            chrome.runtime.sendMessage(this.extensionId, {exit: true, id: this.id}, response => {
-                $('#logout-form').submit()
-            })
+            $('#logout-form').submit()
         }
     }
 })
