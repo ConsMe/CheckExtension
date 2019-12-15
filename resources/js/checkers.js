@@ -32,9 +32,10 @@ window.vm = new Vue({
         withLogs: true,
     },
     created() {
+        const port = window.location.hostname.indexOf('test') > 0 ? '6001' : '8443'
         const echo = new Echo({
             broadcaster: 'socket.io',
-            host: window.location.hostname + ':6001',
+            host: window.location.hostname + ':' + port,
         });
         echo.join('followTheCheckers')
             .here((users) => {
