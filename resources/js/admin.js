@@ -40,7 +40,7 @@ new Vue({
         addadmin() {
             this.disabled.add = true
             let name = this.name
-            Http.post(`/register/admin`, {name: name, password: this.password})
+            Http.post(`/register-admin/admin`, {name: name, password: this.password})
             .then(response => {
                 this.name = ''
                 this.password = ''

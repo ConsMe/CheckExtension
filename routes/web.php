@@ -18,7 +18,7 @@ use App\Http\Middleware\HasAccessToCheckersTasks;
 Route::group(['middleware' => ['web']], function () {
     Route::group(['middleware' => ['forceLogout', 'auth']], function () {
         Route::group(['middleware' => ['role:superadmin']], function () {
-            Route::post('register/{role}', 'Auth\RegisterController@register')->where('role', 'admin');
+            Route::post('register-admin/{role}', 'Auth\RegisterController@register')->where('role', 'admin');
             Route::get('admins', 'SuperAdminController@getAdmins')->name('admins');
             Route::post('admins/delete', 'SuperAdminController@deleteAdmin');
             Route::post('admins/addchecker', 'SuperAdminController@addChecker');
