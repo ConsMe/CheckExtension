@@ -13,7 +13,7 @@ async function joinChannel(id) {
         if (url.substr(url.length - 1, 1) === '/') {
             url = url.substr(0, url.length - 1)
         }
-        const port = url.indexOf('test') ? '6001' : '8443'
+        const port = url.indexOf('test') > 0 ? '6001' : '8443'
         echo = new Echo({
             broadcaster: 'socket.io',
             host: `${url}:${port}`,
