@@ -11,7 +11,7 @@ async function joinChannel(id) {
         let url = await chromep.storage.local.get('url')
         url = url.url
         if (url.substr(url.length - 1, 1) === '/') {
-            url = url.substr(0, url.length - 2)
+            url = url.substr(0, url.length - 1)
         }
         echo = new Echo({
             broadcaster: 'socket.io',
