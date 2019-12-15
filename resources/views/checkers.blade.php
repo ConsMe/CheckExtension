@@ -87,7 +87,7 @@
                   </template>
 
                 </td>
-                <td class="text-right">
+                <td class="text-right" style="white-space: nowrap;">
                   <a :href="`/checkers/${checker.id}`" class="tr-link"></a>
                   <button class="btn btn-outline-secondary btn-sm mr-2" type="button"
                     title="Настройки" @click.stop="showChangeWindow(checker)">
