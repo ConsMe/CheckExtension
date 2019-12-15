@@ -8,13 +8,13 @@ const presenceChannel = 'followTheCheckers';
 
 async function joinChannel(id) {
     if (!echo) {
-        let url = await chromep.storage.local.get('url')
+        let url = await chromep.storage.local.get('url').url
         if (url.substr(url.length - 1, 1) === '/') {
             url = url.substr(0, url.length - 2)
         }
         echo = new Echo({
             broadcaster: 'socket.io',
-            host: `${url.url}:6001`,
+            host: `${url}:6001`,
         });
         echo.join(presenceChannel);
         echo.private(`checker.${id}`)
