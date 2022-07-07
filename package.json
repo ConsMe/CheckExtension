@@ -28,7 +28,7 @@
         "inputmask": "^4.0.8",
         "laravel-echo": "^1.6.1",
         "laravel-vue-pagination": "^2.3.0",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "moment-timezone": "^0.5.26",
         "socket.io-client": "^2.3.0",
         "vue-router": "^3.0.7"
